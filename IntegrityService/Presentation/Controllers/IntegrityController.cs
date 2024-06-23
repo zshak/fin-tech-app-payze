@@ -40,10 +40,10 @@ public class IntegrityController : ControllerBase
     }
 
     [HttpPost("/companies/{id}/validate")]
-    public async Task<IActionResult> ValidateCompany(int id)
+    public async Task<IActionResult> ValidateCompany(int id, ValidateCompanyRequest request)
     {
-        var apiKey = Request.Headers["ApiKey"].ToString();
-        var apiSecret = Request.Headers["ApiSecret"].ToString();
+        var apiKey = request.ApiKey;
+        var apiSecret = request.ApiSecret;
         var response = await _mediator.Send(new ValidateCompanyCommand()
         {
             Id = id,

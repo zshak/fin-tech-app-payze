@@ -5,7 +5,7 @@ using Domain.Contracts.Strategy;
 using Domain.Models.Entity;
 using MediatR;
 
-namespace Application.Handlers;
+namespace Application.Handlers.Command;
 
 public class CreateCompanyCommandHandler : IRequestHandler<CreateCompanyCommand, CommandResponse<CreateCompanyCommandResponse>>
 {
