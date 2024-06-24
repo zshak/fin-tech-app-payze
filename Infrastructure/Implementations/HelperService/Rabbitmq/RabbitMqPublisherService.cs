@@ -4,6 +4,7 @@ using Domain.Config;
 using Domain.Contracts.HelperService;
 using Domain.Models.Order;
 using Infrastructure.HostedServices;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -70,7 +71,9 @@ public class RabbitMqPublisherService : IRabbitMqPublisherService
 
         lock (_channel)
         {
-            _channel.BasicPublish(exchange: exchange, routingKey,body: serialized);
+            var properties = _channel.CreateBasicProperties();
+            properties.DeliveryMode = 2;
+            _channel.BasicPublish(exchange: exchange, routingKey,body: serialized, basicProperties: properties);
         };
     }
 }

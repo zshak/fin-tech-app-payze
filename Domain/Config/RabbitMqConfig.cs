@@ -13,7 +13,7 @@ public class RabbitMqConfig
     
     public required string OrderExchange { get; set; }
     
-    public required string PaymentQueue { get; set; }
+    public required string PaymentStatusQueue { get; set; }
     public required string OrderStatusQueue { get; set; }
 }
 

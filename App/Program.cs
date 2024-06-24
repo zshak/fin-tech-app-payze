@@ -20,6 +20,7 @@ builder.Services.ConfigureConfig(builder.Configuration);
 
 builder.Services.AddHostedService<OrderPublisherJob>();
 builder.Services.AddHostedService<OrderComputationRabbitmqConsumer>();
+builder.Services.AddHostedService<PaymentStatusRabbitmqConsumer>();
 
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(ApplicationReferenceClass).Assembly));

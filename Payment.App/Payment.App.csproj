@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Payment.Application\Payment.Application.csproj" />
+      <ProjectReference Include="..\Payment.Domain\Payment.Domain.csproj" />
+      <ProjectReference Include="..\Payment.Infrastructure\Payment.Infrastructure.csproj" />
+      <ProjectReference Include="..\Payment.Presentation\Payment.Presentation.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="DotNetEnv" Version="3.0.0" />
+        <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.9.2" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.6" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.6">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Update="appsettings.Development.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
+</Project>

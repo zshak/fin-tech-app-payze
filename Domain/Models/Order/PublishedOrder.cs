@@ -9,4 +9,5 @@ public class PublishedOrder
     public float Amount { get; set; }
     public Currency Currency { get; set; }
     public DateTime CreatedAtUtc { get; set; }
+    
 }

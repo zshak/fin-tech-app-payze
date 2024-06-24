@@ -43,7 +43,15 @@ public class OrderPublisherJob : BackgroundService
             try
             {
                 List<Order> unpublishedOrders = await orderRepo.GetUnpublishedOrdersForUpdateAsync();
-                unpublishedOrders.ForEach(x => _rabbitMqPublisherService.Publish(x,"order-exchange", "payment-queue"));
+                unpublishedOrders.ForEach(order => _rabbitMqPublisherService.Publish(
+                    new PublishedOrder()
+                    {
+                        Amount = order.Amount,
+                        CompanyId = order.CompanyId,
+                        CreatedAtUtc = order.CreatedAtUtc,
+                        Currency = order.Currency,
+                        OrderId = order.OrderId
+                    },"order-exchange", "payment-queue"));
 
                 await orderRepo.SetOrdersToPublishedAsync(unpublishedOrders.Select(o => o.OrderId).ToList());
             }

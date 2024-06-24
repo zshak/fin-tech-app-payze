@@ -25,7 +25,7 @@ public static class ServiceCollectionExtentions
     {
         // Add DbContext
         services.AddDbContext<CompanyContext>();
-
+        
         return services;
     }
     

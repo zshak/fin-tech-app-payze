@@ -14,32 +14,29 @@ using RabbitMQ.Client.Events;
 
 namespace Infrastructure.Implementations.HelperService.Rabbitmq;
 
-public class OrderComputationRabbitmqConsumer : GenericRabbitmqConsumer
+public class OrderComputationRabbitmqConsumer : GenericRabbitmqConsumer, IDisposable
 {
     private readonly string _queueName;
     private readonly ILogger<OrderComputationRabbitmqConsumer> _logger;
     private IOrderRepo _orderRepo;
     private IOrderComputationStatusRepo _orderComputationStatusRepo;
-    private readonly IServiceScopeFactory _serviceScopeFactory;
+    private readonly IServiceScope _scopeProvider;
 
     public OrderComputationRabbitmqConsumer(
         IOptions<RabbitMqConfig> rabbitMqConfig,
         ILogger<OrderComputationRabbitmqConsumer> logger,
         IServiceScopeFactory serviceScopeFactory) : base(rabbitMqConfig)
     {
+        _scopeProvider = serviceScopeFactory.CreateScope();
+        _orderRepo = _scopeProvider.ServiceProvider.GetRequiredService<IOrderRepo>();
+        _orderComputationStatusRepo = _scopeProvider.ServiceProvider.GetRequiredService<IOrderComputationStatusRepo>();
+        
         _logger = logger;
-        _serviceScopeFactory = serviceScopeFactory;
         _queueName = rabbitMqConfig.Value.OrderStatusQueue;
     }
     
-
     private async Task OnConsumerReceived(object _, BasicDeliverEventArgs ea)
     {
-        
-        using var scope = _serviceScopeFactory.CreateScope();
-        _orderRepo = scope.ServiceProvider.GetRequiredService<IOrderRepo>();
-        _orderComputationStatusRepo = scope.ServiceProvider.GetRequiredService<IOrderComputationStatusRepo>();
-        
         try
         {
             string message = Encoding.UTF8.GetString(ea.Body.ToArray());
@@ -100,6 +97,11 @@ public class OrderComputationRabbitmqConsumer : GenericRabbitmqConsumer
 
     public override Task StopAsync(CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return Task.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        _scopeProvider?.Dispose();
     }
 }
