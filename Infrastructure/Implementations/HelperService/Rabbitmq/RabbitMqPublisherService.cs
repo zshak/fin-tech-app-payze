@@ -15,36 +15,28 @@ namespace Application.Implementations.HelperService;
 public class RabbitMqPublisherService : IRabbitMqPublisherService
 {
     private readonly IModel _channel;
-    private readonly ILogger<RabbitMqPublisherService> _logger;
     private readonly string _exchange;
     private readonly RabbitMqConfig _config;
+
     public RabbitMqPublisherService(
         IOptions<RabbitMqConfig> rabbitMqConfig)
     {
         _config = rabbitMqConfig.Value;
-        try
+        ConnectionFactory connectionFactory = new ConnectionFactory()
         {
-            ConnectionFactory connectionFactory = new ConnectionFactory()
-            {
-                HostName = _config.Host,
-                VirtualHost = _config.VirtualHost,
-                Port = _config.Port,
-                UserName = _config.Username,
-                Password = _config.Password
-            };
+            HostName = _config.Host,
+            VirtualHost = _config.VirtualHost,
+            Port = _config.Port,
+            UserName = _config.Username,
+            Password = _config.Password
+        };
 
-            IConnection connection = connectionFactory.CreateConnection();
+        IConnection connection = connectionFactory.CreateConnection();
 
-            _channel = connection.CreateModel();
-            InitializeExchanges();
-        }
-        catch (Exception e)
-        {
-            _logger.LogError($"Rabbit Publisher Failed. Message: {e.Message}, StackTrace: {e.StackTrace}");
-            throw;
-        }
-    }   
-    
+        _channel = connection.CreateModel();
+        InitializeExchanges();
+    }
+
     private void InitializeExchanges()
     {
         foreach (var exchangeEntry in _config.Exchanges)
@@ -59,8 +51,8 @@ public class RabbitMqPublisherService : IRabbitMqPublisherService
             {
                 _channel.QueueDeclare(queue, exclusive: false, durable: true, autoDelete: false);
 
-                _channel.QueueBind(queue: queue, exchange: exchangeName, routingKey: 
-                    exchangeType == "fanout"? "" : queue);
+                _channel.QueueBind(queue: queue, exchange: exchangeName, routingKey:
+                    exchangeType == "fanout" ? "" : queue);
             }
         }
     }
@@ -73,7 +65,9 @@ public class RabbitMqPublisherService : IRabbitMqPublisherService
         {
             var properties = _channel.CreateBasicProperties();
             properties.DeliveryMode = 2;
-            _channel.BasicPublish(exchange: exchange, routingKey,body: serialized, basicProperties: properties);
-        };
+            _channel.BasicPublish(exchange: exchange, routingKey, body: serialized, basicProperties: properties);
+        }
+
+        ;
     }
 }

@@ -1,0 +1,48 @@
+﻿services:
+
+  postgres_db:
+    image: postgres
+    container_name: ftech_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: payze
+      POSTGRES_DB: fintech
+    ports:
+      - "1234:5432"
+
+  fin-tech-rmq-server:
+    image: rabbitmq:3-management
+    container_name: ftech-rmq-server  
+    ports:
+      - "8080:15672"  # RabbitMQ Management UI
+      - "5672:5672"    # RabbitMQ AMQP
+      
+  integrity-service:
+    image: integrity-service
+    build:
+      context: .
+      dockerfile: IntegrityService/App/Dockerfile
+    ports:
+      - "5016:5016"
+    environment:
+      ASPNETCORE_URLS: "http://+:5016"
+
+  order-service:
+    image: order-service
+    build:
+      context: .
+      dockerfile: App/Dockerfile
+    ports:
+      - "5017:5017"
+    environment:
+      ASPNETCORE_URLS: "http://+:5017"
+
+  payment-app:
+    image: payment-app
+    build:
+      context: .
+      dockerfile: Payment.App/Dockerfile
+    ports:
+      - "5018:5018"
+    environment:
+      ASPNETCORE_URLS: "http://+:5018"

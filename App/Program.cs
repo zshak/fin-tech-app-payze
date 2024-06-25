@@ -28,6 +28,8 @@ builder.Services.AddMediatR(cfg =>
 
 var app = builder.Build();
 
+app.EnsureDbCreation();
+
 app.ConfigureSwaggerUI(builder.Configuration);
 
 // Configure the HTTP request pipeline.

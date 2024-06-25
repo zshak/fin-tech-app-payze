@@ -25,7 +25,6 @@ public static class ServiceCollectionExtentions
     {
         // Add DbContext
         services.AddDbContext<CompanyContext>();
-        
         return services;
     }
     
@@ -57,6 +56,25 @@ public static class ServiceCollectionExtentions
         app.UseSwagger();
         app.UseSwaggerUI();
         
+        return app;
+    }
+    
+    
+    public static WebApplication EnsureDbCreation(this WebApplication app)
+    {
+        using var scope = app.Services.CreateScope();
+        var services = scope.ServiceProvider;
+        try
+        {   
+            var dbContext = services.GetRequiredService<CompanyContext>();
+            dbContext.Database.Migrate();
+        } 
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+
         return app;
     }
 }

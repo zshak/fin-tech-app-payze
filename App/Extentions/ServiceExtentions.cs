@@ -5,6 +5,7 @@ using Domain.Contracts.Repo;
 using Infrastructure;
 using Infrastructure.Implementations.Repo;
 using Infrastructure.Implementations.Repo.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace App.Extentions;
 
@@ -65,6 +66,24 @@ public static class ServiceExtentions
         app.UseSwagger();
         app.UseSwaggerUI();
         
+        return app;
+    }
+    
+    public static WebApplication EnsureDbCreation(this WebApplication app)
+    {
+        using var scope = app.Services.CreateScope();
+        var services = scope.ServiceProvider;
+        try
+        {   
+            var dbContext = services.GetRequiredService<OrderContext>();
+            dbContext.Database.Migrate();
+        } 
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+
         return app;
     }
 }

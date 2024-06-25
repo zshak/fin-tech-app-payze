@@ -1,5 +1,6 @@
 ﻿using Application.Implementations.HelperService;
 using Domain.Contracts.HelperService;
+using Microsoft.EntityFrameworkCore;
 using Payment.Application.Implementations.Factory;
 using Payment.Domain.Factory;
 using Payment.Infrastructure.Implementations.HelperService.Rabbitmq;
@@ -78,6 +79,24 @@ public static class ServiceExtentions
         app.UseSwagger();
         app.UseSwaggerUI();
         
+        return app;
+    }
+    
+    public static WebApplication EnsureDbCreation(this WebApplication app)
+    {
+        using var scope = app.Services.CreateScope();
+        var services = scope.ServiceProvider;
+        try
+        {   
+            var dbContext = services.GetRequiredService<PaymentContext>();
+            dbContext.Database.Migrate();
+        } 
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+
         return app;
     }
 }
